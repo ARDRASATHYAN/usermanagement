@@ -1,5 +1,3 @@
-// services/UserviewService.js
-
 import api from "./axiosInstance";
 
 export const UserviewService = async (

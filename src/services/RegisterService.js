@@ -1,5 +1,3 @@
-// services/RegisterService.js
-
 import api from "./axiosInstance";
 
 export const RegisterService = async (data, imageFile) => {

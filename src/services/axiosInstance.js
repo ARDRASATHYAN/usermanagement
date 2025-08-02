@@ -1,10 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:5000/api", // match your backend
+    baseURL: "http://localhost:5000/api",
 });
 
-// Request interceptor
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -13,7 +12,7 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// Response interceptor
+
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -39,9 +38,9 @@ api.interceptors.response.use(
                 console.log("New AccessToken:", newAccessToken);
 
 
-                // Update token in header and retry request
+
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                return api(originalRequest); // ✅ this is the fix
+                return api(originalRequest);
             } catch (err) {
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");

@@ -25,7 +25,7 @@ export default function ResetPassword() {
 
     return (
         <div className="h-screen overflow-hidden flex flex-col md:flex-row">
-            {/* Left Image */}
+
             <div className="hidden md:flex w-1/2">
                 <img
                     src="/assets/change-password.jpg"
@@ -34,7 +34,7 @@ export default function ResetPassword() {
                 />
             </div>
 
-            {/* Right Form */}
+
             <div className="w-full md:w-1/2 flex items-center justify-center p-8">
                 <div className="w-full max-w-md bg-white shadow-md rounded-xl p-8">
                     <h2 className="text-2xl font-bold text-center mb-6">Reset Password</h2>

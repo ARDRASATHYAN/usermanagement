@@ -1,5 +1,3 @@
-// services/UserService.js
-
 import api from "./axiosInstance";
 
 export const deleteUserService = async (userId, token) => {
@@ -10,7 +8,7 @@ export const deleteUserService = async (userId, token) => {
             },
         });
 
-        return res.data; // success response
+        return res.data;
     } catch (err) {
         console.error("Delete error:", err.response?.data?.message || err.message);
         throw err;

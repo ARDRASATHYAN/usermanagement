@@ -7,12 +7,12 @@ export const LoginService = async (data) => {
                 headers: { 'Content-Type': 'application/json' },
             });
 
-        const result = res.data; // ✅ axios automatically parses JSON
+        const result = res.data;
 
-        // Optional: return everything to let the caller handle success
+
         return { success: true, data: result };
     } catch (err) {
-        // Optional: return error details to the caller
+
         return {
             success: false,
             message: err.response?.data?.message || 'Login failed',

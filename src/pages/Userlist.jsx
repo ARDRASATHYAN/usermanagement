@@ -4,9 +4,9 @@ import { UserviewService } from "@/services/UserviewService";
 import { useEffect, useState } from "react";
 import { GoPencil } from "react-icons/go";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { useNavigate } from "react-router-dom";
 import DataTable from "../components/DataTable";
 import { Pagination } from "../components/Pagination";
+import { SheetDemo } from "./Edituser";
 
 const Userlist = () => {
     const [users, setUsers] = useState([]);
@@ -15,13 +15,24 @@ const Userlist = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
-    const role = localStorage.getItem('role')
+    const [editOpen, setEditOpen] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState(null);
+
+    const role = localStorage.getItem("role");
+
     const fetchUsers = async () => {
         setIsLoading(true);
         await UserviewService(
             page,
             searchTerm,
-            setUsers,
+            (rawUsers) => {
+                // Normalize ID
+                const formatted = rawUsers.map((user) => ({
+                    ...user,
+                    id: user.id || user._id,
+                }));
+                setUsers(formatted);
+            },
             setTotalCount,
             setTotalPages,
             setIsLoading
@@ -30,7 +41,29 @@ const Userlist = () => {
 
     useEffect(() => {
         fetchUsers();
-    }, [page, searchTerm]); // ✅ trigger fetch on searchTerm change
+    }, [page, searchTerm]);
+
+    const handleEditUser = (user) => {
+        console.log("Clicked Edit for User ID:", user.id);
+        setSelectedUserId(user.id);
+        setEditOpen(true);
+    };
+
+    const selectedUser = users.find((u) => u.id === selectedUserId);
+
+    const handleDeleteUser = async (user) => {
+        const confirmDelete = window.confirm(`Are you sure you want to delete ${user.name}?`);
+        if (!confirmDelete) return;
+
+        try {
+            const token = localStorage.getItem("accessToken");
+            await deleteUserService(user.id, token);
+            alert("User deleted successfully.");
+            fetchUsers();
+        } catch (error) {
+            alert(error.message || "Error deleting user.");
+        }
+    };
 
     const columns = [
         {
@@ -60,15 +93,12 @@ const Userlist = () => {
         {
             accessorKey: "isVerified",
             header: "Verified",
-            cell: (info) => (
-                <span>{info.getValue() ? "✅ Yes" : "❌ No"}</span>
-            ),
+            cell: (info) => <span>{info.getValue() ? "✅ Yes" : "❌ No"}</span>,
         },
         {
             accessorKey: "createdAt",
             header: "Joined",
-            cell: (info) =>
-                new Date(info.getValue()).toLocaleString("en-IN"),
+            cell: (info) => new Date(info.getValue()).toLocaleString("en-IN"),
         },
         {
             accessorKey: "role",
@@ -79,11 +109,7 @@ const Userlist = () => {
             header: "Actions",
             cell: (info) => {
                 const user = info.row.original;
-
-                // Only admins can see edit/delete buttons
-                if (role !== 'admin') {
-                    return null;
-                }
+                if (role !== "admin") return null;
 
                 return (
                     <div className="flex space-x-2">
@@ -98,42 +124,22 @@ const Userlist = () => {
                     </div>
                 );
             },
-        }
-
+        },
     ];
-    const handleDeleteUser = async (user) => {
-        const confirmDelete = window.confirm(`Are you sure you want to delete ${user.name}?`);
-        if (!confirmDelete) return;
 
-        try {
-            const token = localStorage.getItem("accessToken");
-            await deleteUserService(user.id, token);
-            alert("User deleted successfully.");
-            fetchUsers(); // refresh list
-        } catch (error) {
-            alert(error.message || "Error deleting user.");
-        }
-    };
-    const navigate = useNavigate();
-
-    const handleEditUser = (user) => {
-        navigate(`/edit/${user.id}`);
-    };
     return (
         <>
             <Navbar />
             <div className="p-6">
-
                 <div className="bg-white shadow-lg rounded-2xl p-6 h-[calc(96vh-80px)] overflow-hidden flex flex-col">
                     <h2 className="text-2xl font-bold mb-6">User List</h2>
-                    {/* ✅ Search Input */}
                     <div className="mb-4">
                         <input
                             type="text"
                             placeholder="Search by name or email..."
                             value={searchTerm}
                             onChange={(e) => {
-                                setPage(1); // Reset to first page on new search
+                                setPage(1);
                                 setSearchTerm(e.target.value);
                             }}
                             className="border border-gray-300 rounded px-4 py-2 w-full sm:w-80"
@@ -157,6 +163,14 @@ const Userlist = () => {
                     </div>
                 </div>
             </div>
+
+
+            <SheetDemo
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                user={selectedUser}
+                onUpdate={fetchUsers}
+            />
         </>
     );
 };

@@ -20,7 +20,7 @@ export default function RegisterForm() {
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        setImageFile(file); // ✅ Save to state
+        setImageFile(file);
         if (file) {
             setPreview(URL.createObjectURL(file));
         } else {
@@ -30,12 +30,12 @@ export default function RegisterForm() {
 
     return (
         <div className="min-h-screen overflow-hidden flex flex-col md:flex-row">
-            {/* Left Image Section */}
+
             <div className="hidden md:flex w-1/2">
                 <img src='https://th.bing.com/th/id/OIP.Xy_hBB7p8uXd_saCxgamVAHaFN?w=257&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3' />
             </div>
 
-            {/* Right Side Form */}
+
             <div className="w-full md:w-1/2 flex items-center justify-center p-8 ">
                 <div className="w-full max-w-md bg-white shadow-md rounded-xl p-8">
                     <h2 className="text-2xl font-bold text-center mb-6">Register</h2>

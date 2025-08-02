@@ -1,5 +1,3 @@
-// services/EditService.js
-
 import api from "./axiosInstance";
 
 export const EditService = async (userId, formData, accessToken) => {
